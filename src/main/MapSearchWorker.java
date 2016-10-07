@@ -17,16 +17,14 @@ public class MapSearchWorker implements Runnable {
 
 		ContentGenerator generator = ContentGenerator.getInstance();
 		
-		for(int index = 0; index < 1000; index++) {
+		for(int index = 0; index < 100; index++) {
 			String content = generator.getRandomContent();
 			String searchedContent = map.find(content.hashCode());
 			
 			if(searchedContent != null){
-				System.out.println(searchedContent);
-			}else {
-				System.out.println("content does not exist!");
+				System.out.println("found " + searchedContent);
 			}
-			
+
 			try {
 			    Thread.sleep(70);	// search for a content every 70ms
 			} catch(InterruptedException ex) {

@@ -1,6 +1,5 @@
 package main;
 
-
 /**
  *  simulates putting contents to the map 
  *
@@ -18,7 +17,7 @@ public class MapInputWorker implements Runnable {
 
 		ContentGenerator generator = ContentGenerator.getInstance();
 		
-		for(int index = 0; index < 1000; index++) {
+		for(int index = 0; index < 100; index++) {
 			String content = generator.getRandomContent();
 			map.add(content.hashCode(), content);
 			

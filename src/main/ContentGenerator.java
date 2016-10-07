@@ -41,7 +41,7 @@ public class ContentGenerator {
 	}
 	
 	public String getRandomContent() {
-		return contents.get(ThreadLocalRandom.current().nextInt(0, 30));
+		return contents.get(ThreadLocalRandom.current().nextInt(0, 1000));
 	}
 
 }
