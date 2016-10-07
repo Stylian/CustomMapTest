@@ -1,8 +1,5 @@
 package main;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-
 public class Runner {
 
 	public Runner() {
@@ -12,22 +9,26 @@ public class Runner {
 		
 		System.out.println("starting test");
 
-		final ForgettingMap<Long, String> map = new ForgettingMap<>(10);
+		final ForgettingMap<Integer, String> map = new ForgettingMap<>(10);
 		
 		Thread inputWorker1 = new Thread(new MapInputWorker(map));
 		Thread inputWorker2 = new Thread(new MapInputWorker(map));
 		Thread inputWorker3 = new Thread(new MapInputWorker(map));
 		
-		
-		
-		
+		Thread searchWorker1 = new Thread(new MapSearchWorker(map));
+		Thread searchWorker2 = new Thread(new MapSearchWorker(map));
+		Thread searchWorker3 = new Thread(new MapSearchWorker(map));
+		Thread searchWorker4 = new Thread(new MapSearchWorker(map));
 		
 		
 		inputWorker1.start();
 		inputWorker2.start();
 		inputWorker3.start();
 
-	
+		searchWorker1.start();
+		searchWorker2.start();
+		searchWorker3.start();
+		searchWorker4.start();
 	}
 
 }

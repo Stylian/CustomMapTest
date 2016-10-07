@@ -1,10 +1,15 @@
 package main;
 
+
+/**
+ *  simulates putting contents to the map 
+ *
+ */
 public class MapInputWorker implements Runnable {
 
-	private ForgettingMap map;
+	private ForgettingMap<Integer, String> map;
 	
-	public MapInputWorker(ForgettingMap map) {
+	public MapInputWorker(ForgettingMap<Integer, String> map) {
 		this.map = map;
 	}
 
@@ -16,7 +21,12 @@ public class MapInputWorker implements Runnable {
 		for(int index = 0; index < 1000; index++) {
 			String content = generator.getRandomContent();
 			map.add(content.hashCode(), content);
-			System.out.println(content);
+			
+			try {
+			    Thread.sleep(30);	// worker puts a new content every 30ms
+			} catch(InterruptedException ex) {
+			    Thread.currentThread().interrupt();
+			}
 		}
 	}
 
