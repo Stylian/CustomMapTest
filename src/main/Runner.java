@@ -32,8 +32,8 @@ public class Runner {
 			map.add("New York", 8550875);
 			map.add("Chicago", 299590);
 			map.add("Houston", 2296224);
-			map.add("Phoenix", 1445632);
-			map.add("San Diego", 1307402);
+			map.add("Phoenix", 1448798);
+			map.add("San Diego", 1309001);
 		});
 		
 		Thread searchWorker1 = new Thread( () -> {
@@ -66,6 +66,15 @@ public class Runner {
 
 		searchWorker1.start();
 		searchWorker2.start();
+		
+		try {
+			Thread.sleep(4000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println(map.toString());
+		
 	}
 
 }

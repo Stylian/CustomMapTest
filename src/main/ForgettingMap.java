@@ -2,21 +2,37 @@ package main;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ForgettingMap<K, V> extends ConcurrentHashMap<K, V>{
+public class ForgettingMap<K, V> {
 
 	private int limit;
+	private ConcurrentHashMap<K, V> entries;
+	private ConcurrentHashMap<K, Integer> searches;
 	
 	public ForgettingMap(int limit) {
-	//	super(limit);			// might be a waste to allocate too much memory for large limits
 		this.limit = limit;
+		entries = new ConcurrentHashMap<>(limit * 4);
+		searches = new ConcurrentHashMap<>(limit * 4);
 	}
 
 	public void add(K key, V value) {
-		put(key, value);
+		if(entries.mappingCount() == limit) {
+			removeLeastSearched();
+		}
+		
+		entries.put(key, value);
+		
+		searches.put(key, 1);
 	}
 	
 	public V find(K key) {
-		return get(key);
+		searches.put(key, searches.get(key) + 1);
+		
+		return entries.get(key);
+	}
+	
+	private void removeLeastSearched() {
+		
+//		entries.remove(key);
 	}
 	
 }
