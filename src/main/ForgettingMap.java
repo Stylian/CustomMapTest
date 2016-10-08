@@ -1,36 +1,60 @@
 package main;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 public class ForgettingMap<K, V> {
 
 	private int limit;
-	private ConcurrentHashMap<K, V> entries;
-	private ConcurrentHashMap<K, Integer> searches;
+	private Entry<K,V>[] entries;
 	
 	public ForgettingMap(int limit) {
 		this.limit = limit;
-		entries = new ConcurrentHashMap<>(limit * 4);
-		searches = new ConcurrentHashMap<>(limit * 4);
+		entries = new Entry[limit * 4];
 	}
 
 	public void add(K key, V value) {
 		
 		synchronized (this) {
-			if(entries.get(key) == null) {
-				if(entries.mappingCount() == limit) {
-					removeLeastSearched();
-				}
-				searches.put(key, 0);
+			
+			if(key == null) {
+				return;
 			}
-			entries.put(key, value);
+			
+			int hash = hash(key.hashCode());
+			int i = indexFor(hash, entries.length);
+			
+			//replace if exists
+			for(Entry<K,V> e = entries[i]; e != null; e = e.next) {
+				Object k;
+				if(e.hash == hash && ((k=e.key) == key || key.equals(k))) {
+					e.value = value;
+					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to index: " + i);
+					return;
+				}
+			}
+			
+			// add new
+			entries[i] = new Entry<K, V>(key, value, entries[i], hash);
+			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to index: " + i);
 		}
 	}
 	
-	public V find(K key) {
-		searches.put(key, searches.get(key) + 1);
+	public V find(Object key) {
+		if(key == null) {
+			return null;
+		}
 		
-		return entries.get(key);
+		int hash = hash(key.hashCode());
+		
+		for(Entry<K,V> e = entries[indexFor(hash, entries.length)];
+			e != null;
+			e = e.next) {
+			
+			Object k;
+			if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+				return e.value;
+			}
+		}
+		
+		return null;
 	}
 	
 	private void removeLeastSearched() {
@@ -38,4 +62,12 @@ public class ForgettingMap<K, V> {
 //		entries.remove(key);
 	}
 	
+	
+	static int hash(Object key) {
+		return key.hashCode() * 31;
+	}
+	
+	static int indexFor(int h, int length) {
+		return h & (length-1);
+	}
 }
