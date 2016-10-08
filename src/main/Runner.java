@@ -44,10 +44,10 @@ public class Runner {
 				e.printStackTrace();
 			}
 			
-			map.find("Phoenix");
+			map.find("San Antonio");
 			map.find("Philadelphia");
 			map.find("Phoenix");
-			map.find("Angeles");
+			map.find("Los Angeles");
 			map.find("Phoenix");
 			map.find("San Diego");
 		});
@@ -55,8 +55,8 @@ public class Runner {
 		Thread searchWorker2 = new Thread( () -> {
 			map.find("Philadelphia");
 			map.find("Philadelphia");
-			map.find("Houston");
-			map.find("Houston");
+			map.find("Los Angeles");
+			map.find("New York");
 			map.find("Phoenix");
 			map.find("San Diego");
 		});

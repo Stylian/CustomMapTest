@@ -15,13 +15,16 @@ public class ForgettingMap<K, V> {
 	}
 
 	public void add(K key, V value) {
-		if(entries.mappingCount() == limit) {
-			removeLeastSearched();
+		
+		synchronized (this) {
+			if(entries.get(key) == null) {
+				if(entries.mappingCount() == limit) {
+					removeLeastSearched();
+				}
+				searches.put(key, 0);
+			}
+			entries.put(key, value);
 		}
-		
-		entries.put(key, value);
-		
-		searches.put(key, 1);
 	}
 	
 	public V find(K key) {
