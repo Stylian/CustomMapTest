@@ -4,6 +4,7 @@ public class ForgettingMap<K, V> {
 
 	private int limit;
 	private Entry<K,V>[] entries;
+	private int size = 0;
 	
 	public ForgettingMap(int limit) {
 		this.limit = limit;
@@ -13,7 +14,6 @@ public class ForgettingMap<K, V> {
 	public void add(K key, V value) {
 		
 		synchronized (this) {
-			
 			if(key == null) {
 				return;
 			}
@@ -26,17 +26,22 @@ public class ForgettingMap<K, V> {
 				Object k;
 				if(e.hash == hash && ((k=e.key) == key || key.equals(k))) {
 					e.value = value;
-					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to index: " + i);
+					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to bucket: " + i);
 					return;
 				}
 			}
 			
 			// add new
+			if(size >= limit) {
+				removeLeastUsed();
+			}
+			
 			entries[i] = new Entry<K, V>(key, value, entries[i], hash);
-			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to index: " + i);
+			size ++;
+			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to bucket: " + i);
 		}
 	}
-	
+
 	public V find(Object key) {
 		if(key == null) {
 			return null;
@@ -50,6 +55,7 @@ public class ForgettingMap<K, V> {
 			
 			Object k;
 			if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+				System.out.println("found k:"+key + " v:" + e.value);
 				return e.value;
 			}
 		}
@@ -57,9 +63,28 @@ public class ForgettingMap<K, V> {
 		return null;
 	}
 	
-	private void removeLeastSearched() {
+	private void removeLeastUsed() {
+		System.out.println("removing item");
 		
-//		entries.remove(key);
+	}
+	
+	public void remove(Object key) {
+		int hash = (key == null) ? 0 : hash(key.hashCode());
+		int i = indexFor(hash, entries.length);
+		Entry<K, V> prev = entries[i];
+		Entry<K, V> e = prev;
+
+		while (e != null) {
+			Entry<K, V> next = e.next;
+			Object k;
+			if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) {
+				size--;
+				if (prev == e)
+					entries[i] = next;
+				else
+					prev.next = next;
+			}
+		}
 	}
 	
 	

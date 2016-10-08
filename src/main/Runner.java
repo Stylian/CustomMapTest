@@ -8,7 +8,7 @@ public class Runner {
 	public static void main(String[] args) {
 		
 		// key : city , value : population
-		final ForgettingMap<String, Integer> map = new ForgettingMap<>(5);
+		final ForgettingMap<String, Integer> map = new ForgettingMap<>(4);
 		
 		Thread inputWorker1 = new Thread( () -> {
 			map.add("New York", 8550405);
@@ -68,7 +68,7 @@ public class Runner {
 		searchWorker2.start();
 		
 		try {
-			Thread.sleep(4000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
