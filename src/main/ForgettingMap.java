@@ -4,7 +4,7 @@ public class ForgettingMap<K, V> {
 
 	private int limit;
 	private Entry<K,V>[] entries;
-	private Entry<K,V> headOfChain;
+	Entry<K,V> headOfChain;
 	private int size = 0;
 	
 	public ForgettingMap(int limit) {
@@ -41,14 +41,14 @@ public class ForgettingMap<K, V> {
 			entries[i] = newEntry;
 			
 			//put new entry to head of chain
-			newEntry.prev = null;
-			newEntry.next = headOfChain;
-			headOfChain = newEntry;
-			
-//			for(Entry<K,V> en = headOfChain; en != null; en = en.next) {
-//				tailOfChain = en;
-//			}
-			
+			if(headOfChain == null) {
+				headOfChain = newEntry;
+			}else{
+				headOfChain.prev = newEntry;
+				newEntry.prev = null;
+				newEntry.next = headOfChain;
+				headOfChain = newEntry;
+			}
 			size ++;
 			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
 		}
@@ -76,16 +76,23 @@ public class ForgettingMap<K, V> {
 	}
 	
 	private void sort(Entry<K, V> e) {
-		if(e.next == null) {
-			return;
-		}
-		
-		if(e.searched > e.next.searched) {
-			//push down
-			Entry<K,V> e1 = e.prev;
-			Entry<K,V> e2 = e.next;
-			
-			
+		while(e.next != null) {
+			if(e.searched > e.next.searched) {
+				//push down
+				Entry<K,V> e0 = e.prev;
+				Entry<K,V> e1 = e;
+				Entry<K,V> e2 = e.next;
+				Entry<K,V> e3 = e.next.next;
+				
+				e0.next = e2;
+				e1.prev = e2;
+				e1.next = e3;
+				e2.prev = e0;
+				e2.next = e1;
+				if(e3 != null) {
+					e3.prev = e1;
+				}
+			}
 		}
 	}
 
