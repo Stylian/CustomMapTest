@@ -55,20 +55,22 @@ public class ForgettingMap<K, V> {
 	}
 
 	public V find(Object key) {
-		if(key == null) {
-			return null;
-		}
-		
-		int hash = hash(key.hashCode());
-		
-		Entry<K,V> e = entries[indexFor(hash, entries.length)];
-		if(e != null) {
-			Object k;
-			if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
-				System.out.println("found k:"+key + " v:" + e.value);
-				e.searched ++;
-				sort(e);
-				return e.value;
+		synchronized(this) {
+			if(key == null) {
+				return null;
+			}
+			
+			int hash = hash(key.hashCode());
+			
+			Entry<K,V> e = entries[indexFor(hash, entries.length)];
+			if(e != null) {
+				Object k;
+				if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+					System.out.println("found k:"+key + " v:" + e.value);
+					e.searched ++;
+					sort(e);
+					return e.value;
+				}
 			}
 		}
 		
@@ -92,6 +94,8 @@ public class ForgettingMap<K, V> {
 				if(e3 != null) {
 					e3.prev = e1;
 				}
+			}else {
+				break;
 			}
 		}
 	}
