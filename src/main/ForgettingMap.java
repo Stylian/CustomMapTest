@@ -4,6 +4,7 @@ public class ForgettingMap<K, V> {
 
 	private int limit;
 	private Entry<K,V>[] entries;
+	private Entry<K,V> headOfChain;
 	private int size = 0;
 	
 	public ForgettingMap(int limit) {
@@ -13,7 +14,7 @@ public class ForgettingMap<K, V> {
 
 	public void add(K key, V value) {
 		
-		synchronized (this) {
+		synchronized(this) {
 			if(key == null) {
 				return;
 			}
@@ -36,7 +37,18 @@ public class ForgettingMap<K, V> {
 				removeLeastUsed();
 			}
 			
-			entries[i] = new Entry<K, V>(key, value, entries[i], hash);
+			Entry<K,V> newEntry = new Entry<K, V>(key, value, hash);
+			entries[i] = newEntry;
+			
+			//put new entry to head of chain
+			newEntry.prev = null;
+			newEntry.next = headOfChain;
+			headOfChain = newEntry;
+			
+//			for(Entry<K,V> en = headOfChain; en != null; en = en.next) {
+//				tailOfChain = en;
+//			}
+			
 			size ++;
 			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
 		}
@@ -55,6 +67,7 @@ public class ForgettingMap<K, V> {
 			if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
 				System.out.println("found k:"+key + " v:" + e.value);
 				e.searched ++;
+				sort(e);
 				return e.value;
 			}
 		}
@@ -62,23 +75,33 @@ public class ForgettingMap<K, V> {
 		return null;
 	}
 	
-	
-	private K getLeastSearched() {
+	private void sort(Entry<K, V> e) {
+		if(e.next == null) {
+			return;
+		}
+		
+		if(e.searched > e.next.searched) {
+			//push down
+			Entry<K,V> e1 = e.prev;
+			Entry<K,V> e2 = e.next;
 			
-		//test
-		return (K) "Chicago";
+			
+		}
 	}
 
-	
 	private void removeLeastUsed() {
 		
-		K kls = getLeastSearched();
-		System.out.println("removing item " + kls);
+		System.out.println("removing item " + headOfChain.key);
 		
-		remove(kls);
+		// remove from array
+		remove(headOfChain.key);
+		
+		// remove from chain
+		headOfChain = headOfChain.next;
+		headOfChain.prev = null;
 	}
 
-	public void remove(Object key) {
+	private void remove(Object key) {
 		if(key == null) {
 			return;
 		}
