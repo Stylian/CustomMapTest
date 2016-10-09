@@ -10,10 +10,12 @@ public class Runner {
 		// key : city , value : population
 		final ForgettingMap<String, Integer> map = new ForgettingMap<>(4);
 		
-
+		System.out.println("start");
+		
 		map.add("Philadelphia", 1526006);
 		showChain(map);
 		map.add("Houston", 2296224);
+		showChain(map);
 		map.add("San Antonio", 1327407);
 		showChain(map);
 		showChain(map);
@@ -78,12 +80,14 @@ public class Runner {
 		showChain(map);
 		map.add("San Diego", 1309001);
 		showChain(map);
+		
+		System.out.println("end");
 	}
 
 	public static <K, V> void showChain(ForgettingMap<String, Integer> map) {
-		System.out.println("-----------");
-		for(Entry<String, Integer> e = map.headOfChain; e != null; e = e.next) {
-			System.out.println(e.key);
-		}
+//		System.out.println("-----------");
+//		for(Entry<String, Integer> e = map.headOfChain; e != null; e = e.next) {
+//			System.out.println(e.key);
+//		}
 	}
 }
