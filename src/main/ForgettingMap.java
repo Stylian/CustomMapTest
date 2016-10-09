@@ -8,7 +8,7 @@ public class ForgettingMap<K, V> {
 	
 	public ForgettingMap(int limit) {
 		this.limit = limit;
-		entries = new Entry[limit * 4];
+		entries = new Entry[limit * 16];
 	}
 
 	public void add(K key, V value) {
@@ -21,12 +21,12 @@ public class ForgettingMap<K, V> {
 			int hash = hash(key.hashCode());
 			int i = indexFor(hash, entries.length);
 			
-			//replace if exists
-			for(Entry<K,V> e = entries[i]; e != null; e = e.next) {
+			Entry<K,V> e = entries[i];
+			if(e != null) {
 				Object k;
 				if(e.hash == hash && ((k=e.key) == key || key.equals(k))) {
 					e.value = value;
-					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to bucket: " + i);
+					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
 					return;
 				}
 			}
@@ -38,7 +38,7 @@ public class ForgettingMap<K, V> {
 			
 			entries[i] = new Entry<K, V>(key, value, entries[i], hash);
 			size ++;
-			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to bucket: " + i);
+			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
 		}
 	}
 
@@ -49,13 +49,12 @@ public class ForgettingMap<K, V> {
 		
 		int hash = hash(key.hashCode());
 		
-		for(Entry<K,V> e = entries[indexFor(hash, entries.length)];
-			e != null;
-			e = e.next) {
-			
+		Entry<K,V> e = entries[indexFor(hash, entries.length)];
+		if(e != null) {
 			Object k;
 			if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
 				System.out.println("found k:"+key + " v:" + e.value);
+				e.searched ++;
 				return e.value;
 			}
 		}
@@ -63,29 +62,39 @@ public class ForgettingMap<K, V> {
 		return null;
 	}
 	
-	private void removeLeastUsed() {
-		System.out.println("removing item");
-		
-		//remove("Philadelphia");
-	}
 	
-	public void remove(Object key) {
-		int hash = (key == null) ? 0 : hash(key.hashCode());
-		int i = indexFor(hash, entries.length);
-		Entry<K, V> prev = entries[i];
-		Entry<K, V> e = prev;
+	private K getLeastSearched() {
+			
+		//test
+		return (K) "Chicago";
+	}
 
-		while (e != null) {
-			Entry<K, V> next = e.next;
+	
+	private void removeLeastUsed() {
+		
+		K kls = getLeastSearched();
+		System.out.println("removing item " + kls);
+		
+		remove(kls);
+	}
+
+	public void remove(Object key) {
+		if(key == null) {
+			return;
+		}
+		
+		int hash = hash(key.hashCode());
+		int i = indexFor(hash, entries.length);
+
+		Entry<K, V> e = entries[i];
+
+		if(e != null) {
 			Object k;
-			if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) {
-				if (prev == e)
-					entries[i] = next;
-				else
-					prev.next = next;
+			if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
+				entries[i] = null;
+				size--;
 			}
 		}
-		size--;
 	}
 	
 	
