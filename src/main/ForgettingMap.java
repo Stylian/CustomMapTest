@@ -66,6 +66,7 @@ public class ForgettingMap<K, V> {
 	private void removeLeastUsed() {
 		System.out.println("removing item");
 		
+		//remove("Philadelphia");
 	}
 	
 	public void remove(Object key) {
@@ -78,13 +79,13 @@ public class ForgettingMap<K, V> {
 			Entry<K, V> next = e.next;
 			Object k;
 			if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) {
-				size--;
 				if (prev == e)
 					entries[i] = next;
 				else
 					prev.next = next;
 			}
 		}
+		size--;
 	}
 	
 	
