@@ -14,5 +14,9 @@ public class Entry<K,V> {
 		this.hash = hash;
 	}
 
+	@Override
+	public String toString() {
+		return "Entry [key=" + key + ", value=" + value + ", searched=" + searched + "]";
+	}
 
 }

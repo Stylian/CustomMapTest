@@ -7,6 +7,8 @@ public class Runner {
 
 	public static void main(String[] args) {
 		
+		System.out.println("start test");
+		
 		// key : city , value : population
 		final ForgettingMap<String, Integer> map = new ForgettingMap<>(4);
 		
@@ -69,6 +71,11 @@ public class Runner {
 			
 		}).start();		
 		
+		
+		sleep(200);
+		for(Entry<String, Integer> entry : map) {
+			System.out.println(entry);
+		}
 		
 //		System.out.println("start");
 //		

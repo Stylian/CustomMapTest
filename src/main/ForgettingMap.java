@@ -1,6 +1,8 @@
 package main;
 
-public class ForgettingMap<K, V> {
+import java.util.Iterator;
+
+public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private int limit;
 	private Entry<K,V>[] entries;
@@ -86,7 +88,9 @@ public class ForgettingMap<K, V> {
 				Entry<K,V> e2 = e.next;
 				Entry<K,V> e3 = e.next.next;
 				
-				e0.next = e2;
+				if(e0 != null) {
+					e0.next = e2;
+				}
 				e1.prev = e2;
 				e1.next = e3;
 				e2.prev = e0;
@@ -137,5 +141,23 @@ public class ForgettingMap<K, V> {
 	
 	static int indexFor(int h, int length) {
 		return h & (length-1);
+	}
+
+	@Override
+	public Iterator<Entry<K, V>> iterator() {
+		return new Iterator<Entry<K, V>>(){
+			Entry<K,V> next = headOfChain;
+			
+			@Override
+			public boolean hasNext() {
+				return next != null;
+			}
+
+			@Override
+			public Entry<K, V> next() {
+				Entry<K,V> entr = next;
+				next = next.next;
+				return entr;
+			}};
 	}
 }
