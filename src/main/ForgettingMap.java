@@ -5,9 +5,9 @@ import java.util.Iterator;
 public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private int limit;
-	private Entry<K,V>[] entries;
+	volatile Entry<K,V>[] entries;
 	volatile Entry<K,V> headOfChain;
-	private int size = 0;
+	private volatile int size = 0;
 	
 	public ForgettingMap(int limit) {
 		this.limit = limit;
@@ -29,7 +29,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				Object k;
 				if(e.hash == hash && ((k=e.key) == key || key.equals(k))) {
 					e.value = value;
-//					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
+					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
 					return;
 				}
 			}
@@ -52,7 +52,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				headOfChain = newEntry;
 			}
 			size ++;
-//			System.out.println("added k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
+			System.out.println("added k: " + key + " v: " + value + " to slot: " + i);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 			if(e != null) {
 				Object k;
 				if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
-//					System.out.println("found k:"+key + " v:" + e.value);
+					System.out.println("found k:"+key + " v:" + e.value);
 					e.searched ++;
 					sort(e);
 					return e.value;
@@ -107,7 +107,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private void removeLeastUsed() {
 		
-//		System.out.println("removing item " + headOfChain.key);
+		System.out.println("removing entry: " + headOfChain.key);
 		
 		// remove from array
 		remove(headOfChain.key);

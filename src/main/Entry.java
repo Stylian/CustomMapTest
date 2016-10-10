@@ -3,10 +3,10 @@ package main;
 public class Entry<K,V> {
 	final K key;
 	V value;
-	Entry<K,V> prev;
-	Entry<K,V> next;
+	volatile Entry<K,V> prev;
+	volatile Entry<K,V> next;
 	int hash;
-	int searched = 0;
+	volatile int searched = 0;
 	
 	public Entry(K key, V value, int hash) {
 		this.key = key;
