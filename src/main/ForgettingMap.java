@@ -175,6 +175,10 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				Entry<K,V> entr = next;
 				next = next.next;
 				return entr;
+			}
+
+			@Override
+			public void remove() {
 			}};
 	}
 	
