@@ -2,18 +2,35 @@ package main;
 
 import java.util.Iterator;
 
+/**
+ * creates a hash map (without buckets) of a specific item limit and 
+ * removes items with the least searches once the limit is reached.
+ * <br/>
+ * How it works
+ * <br/>
+ * Each entry hold a reference to the above and below entries in a stack. Once an item is searched 
+ * it increments its search value and pushes itself lower to the stack using bubble sort. If the map is full 
+ * then the top item of the stack is popped out and replaced on addition.
+ */
 public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private int limit;
-	volatile Entry<K,V>[] entries;
-	volatile Entry<K,V> headOfChain;
+	Entry<K,V>[] entries;
+	volatile Entry<K,V> headOfStack;
 	private volatile int size = 0;
 	
+	/**
+	 * 
+	 * @param limit the maximum number of items that the map should hold
+	 */
 	public ForgettingMap(int limit) {
 		this.limit = limit;
 		entries = new Entry[limit * 16];
 	}
 
+	/**
+	 * Adds a new item to the map, removes the least searched if the map is full
+	 */
 	public void add(K key, V value) {
 		
 		synchronized(this) {
@@ -29,7 +46,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				Object k;
 				if(e.hash == hash && ((k=e.key) == key || key.equals(k))) {
 					e.value = value;
-					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
+//					System.out.println("replaced k:" + key + " v:" + value + " hash:" + hash + " to slot: " + i);
 					return;
 				}
 			}
@@ -43,19 +60,24 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 			entries[i] = newEntry;
 			
 			//put new entry to head of chain
-			if(headOfChain == null) {
-				headOfChain = newEntry;
+			if(headOfStack == null) {
+				headOfStack = newEntry;
 			}else{
-				headOfChain.prev = newEntry;
+				headOfStack.prev = newEntry;
 				newEntry.prev = null;
-				newEntry.next = headOfChain;
-				headOfChain = newEntry;
+				newEntry.next = headOfStack;
+				headOfStack = newEntry;
 			}
 			size ++;
-			System.out.println("added k: " + key + " v: " + value + " to slot: " + i);
+//			System.out.println("added k: " + key + " v: " + value + " to slot: " + i);
 		}
 	}
 
+	/**
+	 * Searches for an entry and retrieves its value
+	 * @param key the key of the entry requested
+	 * @return the value of the entry
+	 */
 	public V find(Object key) {
 		synchronized(this) {
 			if(key == null) {
@@ -68,7 +90,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 			if(e != null) {
 				Object k;
 				if(e.hash == hash && ((k = e.key) == key || key.equals(k))) {
-					System.out.println("found k:"+key + " v:" + e.value);
+//					System.out.println("found k:"+key + " v:" + e.value);
 					e.searched ++;
 					sort(e);
 					return e.value;
@@ -91,7 +113,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				if(e0 != null) {
 					e0.next = e2;
 				}else{
-					headOfChain = e2;
+					headOfStack = e2;
 				}
 				e1.prev = e2;
 				e1.next = e3;
@@ -109,14 +131,14 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private void removeLeastUsed() {
 		
-		System.out.println("removing entry: " + headOfChain.key);
+		System.out.println("removing entry: " + headOfStack.key);
 		
 		// remove from array
-		remove(headOfChain.key);
+		remove(headOfStack.key);
 		
 		// remove from chain
-		headOfChain = headOfChain.next;
-		headOfChain.prev = null;
+		headOfStack = headOfStack.next;
+		headOfStack.prev = null;
 	}
 
 	private void remove(Object key) {
@@ -137,19 +159,11 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 			}
 		}
 	}
-	
-	static int hash(Object key) {
-		return key.hashCode() * 31;
-	}
-	
-	static int indexFor(int h, int length) {
-		return h & (length-1);
-	}
 
 	@Override
 	public Iterator<Entry<K, V>> iterator() {
 		return new Iterator<Entry<K, V>>(){
-			Entry<K,V> next = headOfChain;
+			Entry<K,V> next = headOfStack;
 			
 			@Override
 			public boolean hasNext() {
@@ -163,4 +177,13 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				return entr;
 			}};
 	}
+	
+	static int hash(Object key) {
+		return key.hashCode() * 31;
+	}
+	
+	static int indexFor(int h, int length) {
+		return h & (length-1);
+	}
+
 }

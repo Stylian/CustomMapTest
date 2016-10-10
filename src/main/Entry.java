@@ -3,9 +3,22 @@ package main;
 public class Entry<K,V> {
 	final K key;
 	V value;
-	volatile Entry<K,V> prev;
-	volatile Entry<K,V> next;
+	
+	/**
+	 * the entry above in the stack
+	 */
+	Entry<K,V> prev;
+	
+	/**
+	 * the entry below in the stack
+	 */
+	Entry<K,V> next;
+	
 	int hash;
+	
+	/**
+	 * the number of times this item was searched since added
+	 */
 	volatile int searched = 0;
 	
 	public Entry(K key, V value, int hash) {
