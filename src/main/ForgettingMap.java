@@ -15,8 +15,8 @@ import java.util.Iterator;
 public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private int limit;
-	Entry<K,V>[] entries;
-	volatile Entry<K,V> headOfStack;
+	private Entry<K,V>[] entries;
+	private volatile Entry<K,V> headOfStack;
 	private volatile int size = 0;
 	
 	/**
@@ -131,7 +131,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private void removeLeastUsed() {
 		
-		System.out.println("removing entry: " + headOfStack.key);
+//		System.out.println("removing entry: " + headOfStack.key);
 		
 		// remove from array
 		remove(headOfStack.key);
@@ -158,6 +158,18 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				size--;
 			}
 		}
+	}
+
+	public int size() {
+		return size;
+	}
+	
+	public Entry<K, V>[] getEntries() {
+		return entries;
+	}
+
+	public Entry<K, V> getHeadOfStack() {
+		return headOfStack;
 	}
 
 	@Override

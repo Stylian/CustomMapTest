@@ -94,7 +94,7 @@ public class Runner {
 					
 					System.out.println("------------------entries array-----------------");
 					int count = 0;
-					for(Entry<String, Integer> entry : map.entries) {
+					for(Entry<String, Integer> entry : map.getEntries()) {
 						System.out.println("[" + count++ + "] " + entry);
 					}
 		     }
@@ -113,7 +113,7 @@ public class Runner {
 
 	public static <K, V> void showChain(ForgettingMap<String, Integer> map) {
 		System.out.println("-----------stack--------------");
-		for(Entry<String, Integer> e = map.headOfStack; e != null; e = e.next) {
+		for(Entry<String, Integer> e = map.getHeadOfStack(); e != null; e = e.next) {
 			System.out.println(e.key);
 		}
 		System.out.println("-------------------------");

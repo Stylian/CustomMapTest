@@ -1,8 +1,8 @@
 package main;
 
 public class Entry<K,V> {
-	final K key;
-	V value;
+ 	final K key;
+ 	V value;
 	
 	/**
 	 * the entry above in the stack
