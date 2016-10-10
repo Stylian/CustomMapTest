@@ -6,7 +6,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 
 	private int limit;
 	private Entry<K,V>[] entries;
-	Entry<K,V> headOfChain;
+	volatile Entry<K,V> headOfChain;
 	private int size = 0;
 	
 	public ForgettingMap(int limit) {
@@ -78,7 +78,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 		
 		return null;
 	}
-	
+
 	private void sort(Entry<K, V> e) {
 		while(e.next != null) {
 			if(e.searched > e.next.searched) {
@@ -98,6 +98,7 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				if(e3 != null) {
 					e3.prev = e1;
 				}
+
 			}else {
 				break;
 			}
