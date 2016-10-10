@@ -103,6 +103,8 @@ public class Runner {
 		     {
 
 		    	 	sleep1(20);
+					map.find("San Antonio");
+					map.find("Philadelphia");
 					map.find("Philadelphia");
 					sleep1(20);
 					

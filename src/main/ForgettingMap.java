@@ -90,6 +90,8 @@ public class ForgettingMap<K, V> implements Iterable<Entry<K,V>> {
 				
 				if(e0 != null) {
 					e0.next = e2;
+				}else{
+					headOfChain = e2;
 				}
 				e1.prev = e2;
 				e1.next = e3;
